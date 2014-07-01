@@ -1,0 +1,720 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <style type="text/css">
+        h1 {
+            background-color: gray;
+            font-size: 1.4em;
+            padding: 5px;
+        }
+
+        input[type="button"] {
+            background-color: lightblue;
+            border: 1px solid gray;
+            border-radius: 5px;
+            padding: 4px 8px 4px 8px;
+        }
+
+            input[type="button"]:hover {
+                background-color: lightgray;
+                border: 1px solid gray;
+                border-radius: 5px;
+                color: Black;
+                padding: 4px 8px 4px 8px;
+                cursor: pointer;
+            }
+    </style>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+    <script type="text/javascript" src="Scripts/md5.js"></script>
+    <!--  function GetBadgeConsumerServiceStatus() {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    async: false,
+                    dataType: "jsonp",
+                    url: BadgeConsumerServiceURL + "GetServiceStatus",
+                    success: handleResponse,
+                    error: handleResponse
+                });
+            });
+        }
+
+
+
+
+
+        -->
+    <script type="text/javascript" lang="javascript">
+        var BadgeAuthorityServiceURL = "http://localhost:1213/BadgeProvider/";
+        //var BadgeProviderServiceURL = "http://projects.elevatebizsolutions.com/BadgeProviderService/BadgeProviderService.svc/";
+        //var BadgeConsumerServiceURL = "http://projects.elevatebizsolutions.com/BadgeConsumerService/BadgeConsumerService.svc/";
+
+        //POST Method
+        function RegisterBadgeConsumer() {
+            $(document).ready(function () {
+                var salt = CryptoJS.enc.Utf8.parse('2989068685854285');
+                var iv = CryptoJS.enc.Utf8.parse('2989068685854285');
+
+                var Name = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('Same Badge Consumer'), salt,
+                    {
+                        keySize: 128 / 8,
+                        iv: iv,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7,
+                    });
+                var EndPoint = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('http://api.SameBadgeConsumer.net:8080/rest/v1'), salt,
+                    {
+                        keySize: 128 / 8,
+                        iv: iv,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7
+                    });
+                var Key = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('2989068685854285'), salt,
+                  {
+                      keySize: 128 / 8,
+                      iv: iv,
+                      mode: CryptoJS.mode.CBC,
+                      padding: CryptoJS.pad.Pkcs7
+                  });
+
+                var jsnObj = {
+                    "name": btoa(Name),
+                    "endpoint": btoa(EndPoint),
+                    "key": btoa(Key)
+                };
+
+
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: BadgeAuthorityServiceURL + 'BadgeConsumer',
+                    cache: false,
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify({ Key: btoa(Key), Name: btoa(Name), EndPoint: btoa(EndPoint) }),
+                    success: function (Result) {
+                        debugger;
+                        data = $.parseJSON(Result);
+                        if (data.length >= 1) {
+                            $("#msg").hide();
+                            $("#ConsumerID").val(data[0].ID);
+                            $("#msg").text("Success : " + Result).show();
+                        }
+                        else {
+                            $("#msg").hide();
+                            $("#msg").text("Success : " + Result).show();
+                        }
+                    },
+                    error: handleError,//function (jqXHR, textStatus, errorThrown) { }
+                    failure: handleError
+                });
+            });
+            return true;
+        }
+
+        //function UnregisterBadgeConsumer() {
+        //    $(document).ready(function () {
+        //        var id = parseInt($("#ConsumerID").val());
+        //        var jsnObj = {
+        //            "ID": '' + id + ''
+        //        };
+        //        //debugger;
+        //        var MD5Digest = hex_md5(jsnObj);
+        //        var BCPvrKey = CryptoJS.enc.Utf8.parse('2989068685854285');
+        //        var iv = CryptoJS.enc.Utf8.parse('2989068685854285');
+
+        //        var Signature = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(MD5Digest), BCPvrKey,
+        //         {
+        //             keySize: 128 / 8,
+        //             iv: iv,
+        //             mode: CryptoJS.mode.CBC,
+        //             padding: CryptoJS.pad.Pkcs7
+        //         });
+
+        //        var jsnObjParam = {
+        //            consumer: btoa(id),
+        //            signature: btoa(Signature)
+        //        };
+
+        //        $.ajax({
+        //            type: "DELETE",
+        //            async: false,
+        //            contentType: "application/json; charset=utf-8",
+        //            cache: false,
+        //            data: JSON.stringify(jsnObjParam),
+        //            url: BadgeAuthorityServiceURL + "BadgeConsumer",
+        //            success: function (Result) {
+        //                //data = $.parseJSON(Result);
+        //                $("#msg").hide();
+        //                $("#msg").text("Success :             " + Result).show();
+        //            },
+        //            error: handleError
+        //        });
+        //    });
+
+        //    return false;
+        //}
+        function VerifyBadge() {
+            $(document).ready(function () {
+                var salt = CryptoJS.enc.Utf8.parse('2989068685854285');
+                var iv = CryptoJS.enc.Utf8.parse('2989068685854285');
+
+                var Name = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('Badge Verification'), salt,
+                    {
+                        keySize: 128 / 8,
+                        iv: iv,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7,
+                    });
+                var EndPoint = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('http://api.SameBadgeConsumer.net:8080/rest/v1'), salt,
+                    {
+                        keySize: 128 / 8,
+                        iv: iv,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7
+                    });
+                var Key = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('2989068685854285'), salt,
+                  {
+                      keySize: 128 / 8,
+                      iv: iv,
+                      mode: CryptoJS.mode.CBC,
+                      padding: CryptoJS.pad.Pkcs7
+                  });
+
+                var jsnObj = {
+                    "name": btoa(Name),
+                    "endpoint": btoa(EndPoint),
+                    "key": btoa(Key)
+                };
+
+
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: BadgeAuthorityServiceURL + 'BadgeVerificationInfo',
+                    cache: false,
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify({ Key: btoa(Key), Name: btoa(Name), EndPoint: btoa(EndPoint) }),
+                    success: function (Result) {
+                        debugger;
+                        data = $.parseJSON(Result);
+                        if (data.length >= 1) {
+                            $("#msg").hide();
+                            $("#ConsumerID").val(data[0].ID);
+                            $("#msg").text("Success : " + Result).show();
+                        }
+                        else {
+                            $("#msg").hide();
+                            $("#msg").text("Success : " + Result).show();
+                        }
+                    },
+                    error: handleError,//function (jqXHR, textStatus, errorThrown) { }
+                    failure: handleError
+                });
+            });
+            return true;
+        }
+
+        function RegisterBadgeIssuer() {
+            $(document).ready(function () {
+                var salt = CryptoJS.enc.Utf8.parse('2989068685854285');
+                var iv = CryptoJS.enc.Utf8.parse('2989068685854285');
+
+                var Name = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('Cisco Badge Provider'), salt,
+                    {
+                        keySize: 128 / 8,
+                        iv: iv,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7,
+                    });
+                var Key = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('3270976878382592'), salt,
+                 {
+                     keySize: 128 / 8,
+                     iv: iv,
+                     mode: CryptoJS.mode.CBC,
+                     padding: CryptoJS.pad.Pkcs7
+                 });
+                var Description = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('Here is a description of the Cisco badge provider'), salt,
+                 {
+                     keySize: 128 / 8,
+                     iv: iv,
+                     mode: CryptoJS.mode.CBC,
+                     padding: CryptoJS.pad.Pkcs7
+                 });
+                var Image = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('http://api.CiscoBadgeProviderImage.net:8080/rest/v2'), salt,
+                   {
+                       keySize: 128 / 8,
+                       iv: iv,
+                       mode: CryptoJS.mode.CBC,
+                       padding: CryptoJS.pad.Pkcs7
+                   });
+                var EndPoint = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('http://api.CiscoBadgeProvider.net:8080/rest/v2'), salt,
+                    {
+                        keySize: 128 / 8,
+                        iv: iv,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7
+                    });
+
+                var jsnObj = {
+                    "name": btoa(Name),
+                    "key": btoa(Key),
+                    "description": btoa(Description),
+                    "image": btoa(Image),
+                    "endpoint": btoa(EndPoint)
+                };
+
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    processData: true,
+                    data: JSON.stringify(jsnObj),
+                    url: BadgeAuthorityServiceURL + "BadgeIssuers",
+                    success: function (Result) {
+                        debugger;
+                        data = $.parseJSON(Result);
+                        if (data.length >= 1) {
+                            $("#msg").hide();
+                            $("#BadgeIssuer").val(data[0].ID);
+                            $("#msg").text("Success : " + Result).show();
+                        }
+                        else {
+                            $("#msg").hide();
+                            $("#msg").text("Success : " + Result).show();
+                        }
+                    },
+                    error: handleResponse
+                });
+            });
+            return true;
+        }
+
+        //function UnregisterBadgeIssuer() {
+        //    $(document).ready(function () {
+        //        var id = parseInt($("#BadgeIssuer").val());
+        //        var jsnObj = {
+        //            "ID": '' + id + ''
+        //        };
+        //        debugger;
+        //        var MD5Digest = hex_md5(jsnObj);
+        //        var BPPvrKey = CryptoJS.enc.Utf8.parse('3270976878382592');
+        //        var iv = CryptoJS.enc.Utf8.parse('3270976878382592');
+
+        //        var Signature = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(MD5Digest), BPPvrKey,
+        //         {
+        //             keySize: 128 / 8,
+        //             iv: iv,
+        //             mode: CryptoJS.mode.CBC,
+        //             padding: CryptoJS.pad.Pkcs7
+        //         });
+
+        //        var jsnObjParam = {
+        //            "id": btoa(id),
+        //            "signature": btoa(Signature)
+        //        };
+
+        //        debugger;
+        //        $.ajax({
+        //            type: "DELETE",
+        //            async: true,
+        //            contentType: "application/json; charset=utf-8",
+        //            dataType: "json",
+        //            processData: true,
+        //            data: JSON.stringify(jsnObjParam),
+        //            url: BadgeAuthorityServiceURL + "BadgeIssuers",
+        //            success: handleResponse
+        //            ,
+        //            error: handleError
+        //        });
+        //    });
+        //}
+
+        //StartBadgeRequest
+        function DisplayBadgeIssuerDetails() {
+
+            $(document).ready(function () {
+                debugger;
+                var id = parseInt($("#ConsumerID").val());
+                var jsnObj = {
+                    "ID": '1',
+                    "Data": '' + id + ''
+                };
+                var jsnObjectBtoA = btoa(jsnObj)
+                var MD5Digest = hex_md5(jsnObjectBtoA);
+
+                var BCPvrKey = CryptoJS.enc.Utf8.parse('2989068685854285');
+                var iv = CryptoJS.enc.Utf8.parse('2989068685854285');
+
+                var Signature = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(MD5Digest), BCPvrKey,
+                 {
+                     keySize: 128 / 8,
+                     iv: iv,
+                     mode: CryptoJS.mode.CBC,
+                     padding: CryptoJS.pad.Pkcs7
+                 });
+
+                var jsnObjParam = {
+                  
+                    "id": btoa(id),
+                    "signature": btoa(Signature)
+                };
+
+
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: BadgeAuthorityServiceURL + 'BadgeRequest',
+                    cache: false,
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify({ id: btoa(id), signature: btoa(Signature) }),
+
+                    success: function (Result) {
+                        debugger;
+                        data = $.parseJSON(Result);
+                        if (data.length >= 1) {
+                            $("#msg").hide();
+                            $("#BadgeRequest").val(data[0].RequestID);
+                            $("#msg").text("Success : " + Result).show();
+                        }
+                        else {
+                            $("#msg").hide();
+                            $("#msg").text("Success : " + Result).show();
+                        }
+                    },
+                    error: handleError,//function (jqXHR, textStatus, errorThrown) { }
+                    failure: handleError
+                });
+
+            });
+        }
+
+        //CancelBadgeRequestBA
+
+        function CancelBadgeRequestBA(id) {
+            $(document).ready(function () {
+                var id = 2;
+                var jsnObj = {
+                    "ConsumerID": '' + id + ''
+                };
+
+                var MD5Digest = hex_md5(jsnObj);
+                var BCPvrKey = CryptoJS.enc.Utf8.parse('2989068685854285');
+                var iv = CryptoJS.enc.Utf8.parse('2989068685854285');
+
+                var Signature = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(MD5Digest), BCPvrKey,
+                 {
+                     keySize: 128 / 8,
+                     iv: iv,
+                     mode: CryptoJS.mode.CBC,
+                     padding: CryptoJS.pad.Pkcs7
+                 });
+
+                var jsnObjParam = {
+                    id: btoa(id),
+                    signature: btoa(Signature)
+                };
+
+                $.ajax({
+                    type: "DELETE",
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(jsnObjParam),
+                    url: BadgeAuthorityServiceURL + "BadgeRequest",
+                    success: handleResponse,
+                    error: handleResponse
+                });
+            });
+        }
+
+        //GET Methods
+
+        // GET GetBadgeInformation
+        function GetBadgeInformation() {
+
+          
+            var issuerId = "NA==";//4
+            var signature = "d09kZVRJQUhGNXZMV1h1eUk1dXZkY2RHQjVQSVJHSUEvb29qdldDank3MHdVa2kxZ1hvNUtFeDVwdjZEbTg4UQ==";
+            debugger;
+            var badgeId = "Mg==";//2
+
+
+            $.ajax({
+                type: "GET",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                processData: true,
+                url: BadgeAuthorityServiceURL + "BadgeInfo/" + issuerId + "/" + badgeId + "/" + signature,
+                success: function (data) {
+                    debugger;
+                    $("#msg").hide();
+                    $("#msg").text("Success : " + data).show();
+                },
+                error: handleResponse
+            });
+
+            //debugger;
+           
+            //var issuerId = parseInt($("#ConsumerID").val());
+            //var jsnObj = {
+            //    "issuerId": '' + issuerId + ''
+            //};
+            //var MD5Digest = hex_md5(jsnObj);
+            //var BCPvrKey = CryptoJS.enc.Utf8.parse('2989068685854285');
+            //var iv = CryptoJS.enc.Utf8.parse('2989068685854285');
+            //var signature = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(MD5Digest), BCPvrKey,
+            // {
+            //     keySize: 128 / 8,
+            //     iv: iv,
+            //     mode: CryptoJS.mode.CBC,
+            //     padding: CryptoJS.pad.Pkcs7
+            // });
+            //var badgeId = 46;           
+            //var dissuerId = btoa(issuerId);
+            //var dsignature = btoa(signature);
+            //var dbadgeId = btoa(badgeId);
+            //$.ajax({
+            //    type: "GET",
+            //    async: false,
+            //    contentType: "application/json; charset=utf-8",
+            //    dataType: "json",
+            //    processData: true,
+            //    url: BadgeAuthorityServiceURL + "BadgeInfo/" + issuerId + "/" + badgeId + "/" + signature,
+            //    success: function (data) {
+            //        debugger;
+            //        $("#msg").hide();
+            //        $("#msg").text("Success : " + data).show();
+            //    },
+            //    error: handleResponse
+            //});
+        }
+        //GET Methods
+
+        // GET GetBadgeTypes
+       
+      
+        /* Badge Provider*/
+        function BadgeProviderServiceStatus() {
+            debugger;
+
+            $.ajax({
+                type: "GET",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                processData: true,
+                url: BadgeAuthorityServiceURL + "status",
+                success: handleResponse,
+                error: handleError
+            });
+
+        }
+        function GetBadgeInfo(id) {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    processData: true,
+                    url: BadgeAuthorityServiceURL + "Badge/"+id,
+                    success: handleResponse,
+                    error: handleResponse
+                });
+            });
+        }
+        function GetBadgeRequest(id) {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    processData: true,
+                    url: BadgeAuthorityServiceURL + "BadgeRequest/" + id,
+                    success: handleResponse,
+                    error: handleResponse
+                });
+            });
+        }
+         function GetBadgeTypes() {
+            debugger;
+
+            $.ajax({
+                type: "GET",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                processData: true,
+                url: BadgeAuthorityServiceURL + "BadgeTypes",
+                success: handleResponse,
+                error: handleError
+            });
+
+         }
+         function GetBadgeTypeInfo(id) {
+             $(document).ready(function () {
+                 $.ajax({
+                     type: "GET",
+                     async: true,
+                     contentType: "application/json; charset=utf-8",
+                     dataType: "json",
+                     processData: true,
+                     url: BadgeAuthorityServiceURL + "BadgeType/" + id,
+                     success: handleResponse,
+                     error: handleResponse
+                 });
+             });
+         }
+         function GetBadgeVerificationInfoRequest(BadgeRequestID) {
+             debugger;
+
+             $.ajax({
+                 type: "GET",
+                 async: false,
+                 contentType: "application/json; charset=utf-8",
+                 dataType: "json",
+                 processData: true,
+                 url: BadgeAuthorityServiceURL + "BadgeVerificationInfo/" + BadgeRequestID,
+                 success: function (data) {
+                     debugger;
+                     $("#msg").hide();
+                     $("#msg").text("Success : " + data).show();
+                 },
+                 error: handleResponse
+             });
+
+         }
+         function GetValidationInfo() {
+             debugger;
+             var id = 1;
+             var jsnObj = {
+                 "ID": '1',
+                 "Data": '' + id + ''
+             };
+             var jsnObjectBtoA = btoa(jsnObj)
+             var MD5Digest = hex_md5(jsnObjectBtoA);
+
+             var BCPvrKey = CryptoJS.enc.Utf8.parse('2989068685854285');
+             var iv = CryptoJS.enc.Utf8.parse('2989068685854285');
+
+             var Signature = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(MD5Digest), BCPvrKey,
+              {
+                  keySize: 128 / 8,
+                  iv: iv,
+                  mode: CryptoJS.mode.CBC,
+                  padding: CryptoJS.pad.Pkcs7
+              });
+
+             $.ajax({
+                 type: "GET",
+                 async: false,
+                 contentType: "application/json; charset=utf-8",
+                 dataType: "jsonp",
+                 data: JSON.stringify({ requestId: btoa(id), signature: btoa(Signature) }),
+                 processData: true,
+                 url: BadgeAuthorityServiceURL + "BadgeVerificationInfo",
+                 success: handleResponse,
+                 error: handleError
+             });
+
+         }
+        /* END Badge Provider*/
+       
+        
+        
+       
+        function handleResponse(result) {
+            debugger;
+            //alert("**Server Success Response: " + result.toSource() + "--------" + result.responseText);
+            $("#msg").hide();
+            $("#msg").text("Success : " + result).show();
+        }
+
+        function handleError(result) {
+            debugger;
+            $("#msg").hide();
+            // alert("**Server Error Response: " + result.toSource() + "--------" + result.responseText);
+            $("#msg").text("Error: " + result + "--------" + result).show();
+
+        }
+
+    </script>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <h1><b> Badge Provider Service</b> </h1>
+
+            Testing of service methods using Jquery AJAX Calls
+
+            <br /><br /><p style="color:red; font-size:12px;">Note : Delete Badge Consumer , Delete Badge Issuer and Cancel Badge Request DELETE the last record added by you using this interface. Please register the record before calling these methods (This has been done for testing purposes only). </p>
+            <p style="color:red; font-size:12px;">All the defined Delete methods should only be tested once you have verfied the other POST and GET methods. Also make sure you call the all POST methods in sequence as they are listed, before calling any other DELETE method</p>  <hr /><hr />
+            <div style="float: left; margin: 0; padding: 0; width: 100%;">
+                <div style="float:left; width:60%;">
+                    <label><b>Badge Authority Service Methods POST, GET, DELETE, PUT</b></label>
+                    <hr /> <br />
+                    <fieldset>
+                        <legend>POST</legend>
+                        <!--<br /> Badge Consumer  : <input type="button" onclick="javascript: return RegisterBadgeConsumer();" title="Register Badge Consumer" value="Register Badge Consumer" />
+                        <br /><br /> Badge Issuer  :  <input type="button" onclick="javascript: return RegisterBadgeIssuer();" title="Register Badge Issuer" value="Register Badge Issuer" />-->
+                      
+                          <br /><br /> Badge Request  :   <input type="button" onclick="javascript: return DisplayBadgeIssuerDetails();" value="Start Badge Request" />
+                      
+                          <!--<br /><br /> Verify Badge  :  <input type="button" onclick="javascript: return VerifyBadge()" title="VerifyBadge" value="Verify Badge" />-->
+                        <br />
+
+
+                    </fieldset>
+                    <br />
+
+                    <fieldset>
+                        <legend>GET</legend>
+
+                        <br />Badge Provider:  <input type="button" onclick="BadgeProviderServiceStatus();" value="Badge Provider Serice Status" />
+                        <br /><br />Badge  :  <input type="button" onclick="GetBadgeInfo(9);" value="Get Badge Info" />
+                       
+                       <br /><br />Badge Request  :  <input type="button" onclick="GetBadgeRequest(15);" value="Get Badge Request" />
+                    
+                       <br /><br />Badge Types  :<input type="button" onclick="javascript: return GetBadgeTypes();" value="GetBadgeTypes" />
+                        <br /><br />Badge Type   :<input type="button" onclick="javascript: return GetBadgeTypeInfo(5);" value="GetBadgeTypeInfo" />
+
+                        <br /><br />Badge Verification Info  :<input type="button" onclick="javascript: return GetValidationInfo();" value="Get Badge Verification Info" />
+                          <br />
+                    </fieldset><br />
+
+                    <fieldset>
+                        <legend>DELETE</legend>
+                        <!--<br /> Badge Consumer   : <input type="button" onclick="UnregisterBadgeConsumer();" title="Delete Badge Consumer" value="Delete Badge Consumer" />-->
+                        <input type="hidden" id="ConsumerID" value="22" />
+                        <!--<br /> <br /> Badge Issuer :  <input type="button" onclick="UnregisterBadgeIssuer();" title="Delete Badge Issuer" value="Delete Badge Issuer" />-->
+
+
+                        <input type="hidden" id="BadgeIssuer" value="5" />
+                        <br /> <br /> Badge Request  : <input type="button" onclick="javascript: return CancelBadgeRequestBA(5);" value="Cancel Badge Request" />
+                        <input type="hidden" id="BadgeRequest" value="46" /><br />
+                    </fieldset> <br />
+
+
+
+
+
+                    <br />
+                </div>
+                <div style="border: 1px solid #5a5a5a; float: right; margin: 0; min-height: 350px; padding: 0; width: 38%;">
+                    <div id="BadgeProvidersList">
+                        <div style="float: left; background-color: lightgray; height: 8px; width: 100%; padding: 0; margin: 0;">
+                            <label style="padding: 0; margin: 0; display: block; background: lightgray;">Output</label>
+                        </div><br /><br />
+                        <span id="msg"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
