@@ -160,12 +160,12 @@ namespace BadgeProvider.Controllers
                                     badgeObj.BadgeList = lstBadges;
                                     badgeObj.Signature = signed;
 
-                                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://projects.elevatebizsolutions.com/BadgeAuthorityService/BadgeAuthorityService.svc/VerifyBadgeRequest");
+                                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(ConfigurationManager.AppSettings["BadgeAuthorityService"].ToString() + "BadgeRequest");
                                     //HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost:1727/BadgeAuthorityService.svc/VerifyBadgeRequest");
                                     string parameters = badgeObj.ToJSON();
                                     //string parameters = "{\"BadgeRequestID\": \"" + BadgeRequestID + "\",\"BadgeList\": \"" + jsnString + "\",\"Signature\": \"" + signed + "\"}";
 
-                                    request.Method = "POST";
+                                    request.Method = "PUT";
                                     request.ContentLength = 0;
                                     request.ContentType = "application/json";
                                     if (!string.IsNullOrEmpty(parameters))

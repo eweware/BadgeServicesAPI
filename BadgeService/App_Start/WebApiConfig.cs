@@ -22,23 +22,32 @@ namespace BadgeService
                defaults: new { controller = "Badge", action = "status" }
            );
 
-           //Uncomment if parameter needs to be sent
             config.Routes.MapHttpRoute(
-             name: "DefaultApi",
-             routeTemplate: "BadgeAuthority/{controller}/{issuerId}/{badgeId}/{signature}",
-             defaults: new { issuerId = RouteParameter.Optional, badgeId = RouteParameter.Optional, signature = RouteParameter.Optional, controller = "BadgeInfo" }
-         );
-              config.Routes.MapHttpRoute(
-             name: "DefaultBadgeVerApi",
-             routeTemplate: "BadgeAuthority/{controller}/{requestId}",
-             defaults: new { requestId = RouteParameter.Optional, controller = "BadgeVerificationInfo" }
-         );
-            
+              name: "DefaultbadgeRequestApi",
+              routeTemplate: "BadgeAuthority/BadgeRequest/{id}",
+              defaults: new { controller = "BadgeRequest", id = RouteParameter.Optional, action = "GetBadgeRequestById" }
+          );
+
+            config.Routes.MapHttpRoute(
+           name: "DefaultBadgeVerApi",
+           routeTemplate: "BadgeAuthority/{controller}/{requestId}",
+           defaults: new { requestId = RouteParameter.Optional, controller = "BadgeVerificationInfo" }
+          );
+
             config.Routes.MapHttpRoute(
                name: "DefaultbadgeApi",
                routeTemplate: "BadgeAuthority/{controller}/{id}",
                defaults: new { id = RouteParameter.Optional }
            );
+            //Uncomment if parameter needs to be sent
+            config.Routes.MapHttpRoute(
+             name: "DefaultApi",
+             routeTemplate: "BadgeAuthority/{controller}/{issuerId}/{badgeId}/{signature}",
+             defaults: new { issuerId = RouteParameter.Optional, badgeId = RouteParameter.Optional, signature = RouteParameter.Optional, controller = "BadgeInfo" }
+         );
+
+
+
 
             var json = config.Formatters.JsonFormatter;
             json.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;

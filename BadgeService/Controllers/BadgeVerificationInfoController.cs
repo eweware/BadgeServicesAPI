@@ -50,8 +50,8 @@ namespace BadgeService.Controllers
                         var digest = encryptDecryptObj.MD5Hash(jsnString); // makes a digest
                         string sign = encryptDecryptObj.EncryptDigestwithBAPrivateKey(digest, BAPvrKey); //signs the digest with the badge authority private key
 
-                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(ConfigurationManager.AppSettings["BadgeProviderService"].ToString() + "/GetValidationInfo");
-                        string parameters = parameters = "{\"BadgeRequestID\": \"" + requestId + "\",\"Signature\": \"" + sign + "\"}"; ; //jsonString; //
+                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(ConfigurationManager.AppSettings["BadgeProviderService"].ToString() + "/BadgeVerificationInfo");
+                        string parameters = parameters = "{\"requestId\": \"" + requestId + "\",\"signature\": \"" + sign + "\"}"; ; //jsonString; //
                         request.Method = "POST";
                         request.ContentLength = 0;
                         request.ContentType = "application/json";

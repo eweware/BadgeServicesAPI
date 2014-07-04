@@ -136,7 +136,9 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Content Include="Global.asax" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -149,6 +151,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\BadgeAuthorityAPI.pubxml" />
+    <None Include="Properties\PublishProfiles\BadgeProviderAPI.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

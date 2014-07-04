@@ -33,7 +33,9 @@ namespace BadgeService.Controllers
         /// </summary>
         /// <param name="id">BadgeRequestID</param>
         /// <returns>status</returns>
-        public string Get(string id)
+         //[Route("BadgeAuthority/BadgeRequest/{id}")]
+        [ActionName("GetBadgeRequestById")]
+        public string GET(string id)
         {
             if (!string.IsNullOrEmpty(id))
             {
@@ -120,9 +122,9 @@ namespace BadgeService.Controllers
                                 var digest = encryptDecryptObj.MD5Hash(jsnString); // makes a digest
                                 string sign = encryptDecryptObj.EncryptDigestwithBAPrivateKey(digest, BAPvrKey); //signs the digest with the badge authority private key
 
-                                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://projects.elevatebizsolutions.com/BadgeProviderService/BadgeProviderService.svc/StartBadgeRequest");
+                                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(ConfigurationManager.AppSettings["BadgeProviderService"].ToString() +"/BadgeRequest");
                                 //HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost:1730/BadgeProviderService.svc/StartBadgeRequest");
-                                string parameters = parameters = "{\"ID\": \"" + val + "\",\"Signature\": \"" + sign + "\"}"; ; //jsonString; //
+                                string parameters = parameters = "{\"id\": \"" + val + "\",\"signature\": \"" + sign + "\"}"; ; //jsonString; //
                                 request.Method = "POST";
                                 request.ContentLength = 0;
                                 request.ContentType = "application/json";
